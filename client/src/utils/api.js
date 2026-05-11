@@ -1,4 +1,4 @@
-const DEFAULT_API_BASE = "http://localhost:5000/api";
+const DEFAULT_API_BASE = "https://mern-port-20265.onrender.com";
 
 export const API_BASE =
   import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE;
