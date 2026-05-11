@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const path = require("path");
 
 dotenv.config();
 
@@ -41,11 +42,28 @@ app.use("/api/skills", skillRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/subscriptions", subscribeRoutes);
 
-app.use((req, res) => {
-  res.status(404).json({
-    message: "Route not found",
-  });
+// If an unknown request starts with /api return JSON 404
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api")) {
+    return res.status(404).json({ message: "Route not found" });
+  }
+  next();
 });
+
+// Serve front-end in production from client/dist (Vite build)
+if (process.env.NODE_ENV === "production") {
+  const clientDist = path.join(__dirname, "../client/dist");
+  app.use(express.static(clientDist));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(clientDist, "index.html"));
+  });
+} else {
+  // non-production: any non-API route is treated as not found
+  app.use((req, res) => {
+    res.status(404).json({ message: "Route not found" });
+  });
+}
 
 const startServer = async () => {
   try {
