@@ -64,8 +64,8 @@ if (process.env.NODE_ENV === "production") {
 
   app.use(express.static(clientDist));
 
-  // FIXED ROUTE
-  app.get("/*", (req, res) => {
+  // Serve React SPA for any unknown route (fallback middleware)
+  app.use((req, res) => {
     res.sendFile(path.join(clientDist, "index.html"));
   });
 } else {
